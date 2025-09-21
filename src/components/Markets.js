@@ -2,38 +2,99 @@ import React, { useState } from 'react';
 
 function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData }) {
   const [amounts, setAmounts] = useState({});
-  
+  const [loadingStates, setLoadingStates] = useState({});
+
   const markets = [
-    { symbol: 'USDC', name: 'USD Coin' },
-    { symbol: 'DAI', name: 'Dai Stablecoin' },
-    { symbol: 'WETH', name: 'Wrapped Ether' }
+    {
+      symbol: 'USDC',
+      name: 'USD Coin',
+      icon: 'USDC',
+      color: '#2775ca'
+    },
+    {
+      symbol: 'DAI',
+      name: 'Dai Stablecoin',
+      icon: 'DAI',
+      color: '#f4b731'
+    },
+    {
+      symbol: 'WETH',
+      name: 'Wrapped Ether',
+      icon: 'ETH',
+      color: '#627eea'
+    }
   ];
 
-  const handleAction = (action, asset) => {
+  const handleAction = async (action, asset) => {
     const amount = amounts[`${asset}-${action}`] || '0';
-    
-    switch(action) {
-      case 'supply':
-        onSupply(asset, amount);
-        break;
-      case 'borrow':
-        onBorrow(asset, amount);
-        break;
-      case 'repay':
-        onRepay(asset, amount);
-        break;
-      case 'withdraw':
-        onWithdraw(asset, amount);
-        break;
-      default:
-        break;
+    const actionKey = `${asset}-${action}`;
+
+    if (!amount || parseFloat(amount) <= 0) {
+      return;
+    }
+
+    setLoadingStates(prev => ({ ...prev, [actionKey]: true }));
+
+    try {
+      switch(action) {
+        case 'supply':
+          await onSupply(asset, amount);
+          break;
+        case 'borrow':
+          await onBorrow(asset, amount);
+          break;
+        case 'repay':
+          await onRepay(asset, amount);
+          break;
+        case 'withdraw':
+          await onWithdraw(asset, amount);
+          break;
+        default:
+          break;
+      }
+
+      // Clear the input after successful action
+      setAmounts(prev => ({ ...prev, [`${asset}-${action}`]: '' }));
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [actionKey]: false }));
     }
   };
+
+  const formatRate = (rate) => {
+    const percentage = (parseFloat(rate || 0) * 100);
+    return percentage.toFixed(2);
+  };
+
+  const formatBalance = (balance) => {
+    const value = parseFloat(balance || 0);
+    if (value === 0) return '0.00';
+    if (value < 0.01) return '<0.01';
+    return value.toFixed(4);
+  };
+
+  const formatLiquidity = (liquidity) => {
+    const value = parseFloat(liquidity || 0);
+    if (value === 0) return '0.00';
+    if (value < 0.01) return '<0.01';
+    if (value > 1000000) return `${(value / 1000000).toFixed(2)}M`;
+    if (value > 1000) return `${(value / 1000).toFixed(2)}K`;
+    return value.toFixed(2);
+  };
+
+  const isLowLiquidity = (liquidity) => {
+    return parseFloat(liquidity || 0) < 1000;
+  };
+
+  const LoadingSpinner = () => (
+    <div className="loading">
+      <div className="loading-spinner"></div>
+    </div>
+  );
 
   return (
     <div className="markets">
       <h2>Markets</h2>
-      
+
       <table className="markets-table">
         <thead>
           <tr>
@@ -46,107 +107,151 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
             <th>Actions</th>
           </tr>
         </thead>
-        
+
         <tbody>
-          {markets.map(market => (
-            <tr key={market.symbol}>
+          {markets.map((market, index) => (
+            <tr key={market.symbol} style={{ animationDelay: `${index * 0.1}s` }}>
               <td>
                 <div className="asset-info">
-                  <span className="symbol">{market.symbol}</span>
-                  <span className="name">{market.name}</span>
+                  <div className="asset-icon">
+                    {market.icon}
+                  </div>
+                  <div className="asset-details">
+                    <span className="symbol">{market.symbol}</span>
+                    <span className="name">{market.name}</span>
+                  </div>
                 </div>
               </td>
-              
+
               <td>
-                {marketData[market.symbol]
-                  ? `${(parseFloat(marketData[market.symbol].supplyRate) * 100).toFixed(2)}%`
-                  : 'Loading...'
-                }
+                {marketData[market.symbol] ? (
+                  <span className="rate-display supply-rate">
+                    {formatRate(marketData[market.symbol].supplyRate)}%
+                  </span>
+                ) : (
+                  <LoadingSpinner />
+                )}
               </td>
 
               <td>
-                {marketData[market.symbol]
-                  ? `${(parseFloat(marketData[market.symbol].borrowRate) * 100).toFixed(2)}%`
-                  : 'Loading...'
-                }
+                {marketData[market.symbol] ? (
+                  <span className="rate-display borrow-rate">
+                    {formatRate(marketData[market.symbol].borrowRate)}%
+                  </span>
+                ) : (
+                  <LoadingSpinner />
+                )}
               </td>
 
               <td>
-                <span className={parseFloat(marketData[market.symbol]?.availableLiquidity || '0') < 0.01 ? 'low-liquidity' : ''}>
-                  {marketData[market.symbol]
-                    ? `${parseFloat(marketData[market.symbol].availableLiquidity).toFixed(4)} ${market.symbol}`
-                    : 'Loading...'
-                  }
+                {marketData[market.symbol] ? (
+                  <span
+                    className={`liquidity-display ${isLowLiquidity(marketData[market.symbol].availableLiquidity) ? 'low-liquidity' : ''}`}
+                  >
+                    {formatLiquidity(marketData[market.symbol].availableLiquidity)} {market.symbol}
+                  </span>
+                ) : (
+                  <LoadingSpinner />
+                )}
+              </td>
+
+              <td>
+                <span className="balance-display">
+                  {formatBalance(balances[market.symbol]?.supply)}
                 </span>
               </td>
 
-              <td>{balances[market.symbol]?.supply || '0.00'}</td>
+              <td>
+                <span className="balance-display">
+                  {formatBalance(balances[market.symbol]?.borrow)}
+                </span>
+              </td>
 
-              <td>{balances[market.symbol]?.borrow || '0.00'}</td>
-              
               <td>
                 <div className="action-group">
-                  <div className="supply-withdraw-group">
+                  {/* Supply/Withdraw Row */}
+                  <div className="action-row">
                     <input
+                      className="action-input"
                       type="number"
-                      placeholder="Supply Amount"
+                      step="0.01"
+                      min="0"
+                      placeholder={`Supply ${market.symbol}`}
+                      value={amounts[`${market.symbol}-supply`] || ''}
                       onChange={(e) => setAmounts({
                         ...amounts,
                         [`${market.symbol}-supply`]: e.target.value
                       })}
                     />
                     <button
-                      className="btn-supply"
+                      className="action-btn btn-supply"
                       onClick={() => handleAction('supply', market.symbol)}
+                      disabled={loadingStates[`${market.symbol}-supply`]}
                     >
-                      Supply
+                      {loadingStates[`${market.symbol}-supply`] ? <LoadingSpinner /> : 'Supply'}
                     </button>
 
                     <input
+                      className="action-input"
                       type="number"
-                      placeholder="Withdraw Amount"
+                      step="0.01"
+                      min="0"
+                      placeholder={`Withdraw ${market.symbol}`}
+                      value={amounts[`${market.symbol}-withdraw`] || ''}
                       onChange={(e) => setAmounts({
                         ...amounts,
                         [`${market.symbol}-withdraw`]: e.target.value
                       })}
                     />
                     <button
-                      className="btn-withdraw"
+                      className="action-btn btn-withdraw"
                       onClick={() => handleAction('withdraw', market.symbol)}
+                      disabled={loadingStates[`${market.symbol}-withdraw`]}
                     >
-                      Withdraw
+                      {loadingStates[`${market.symbol}-withdraw`] ? <LoadingSpinner /> : 'Withdraw'}
                     </button>
                   </div>
 
-                  <div className="borrow-repay-group">
+                  {/* Borrow/Repay Row */}
+                  <div className="action-row">
                     <input
+                      className="action-input"
                       type="number"
-                      placeholder="Borrow Amount"
+                      step="0.01"
+                      min="0"
+                      placeholder={`Borrow ${market.symbol}`}
+                      value={amounts[`${market.symbol}-borrow`] || ''}
                       onChange={(e) => setAmounts({
                         ...amounts,
                         [`${market.symbol}-borrow`]: e.target.value
                       })}
                     />
                     <button
-                      className="btn-borrow"
+                      className="action-btn btn-borrow"
                       onClick={() => handleAction('borrow', market.symbol)}
+                      disabled={loadingStates[`${market.symbol}-borrow`]}
                     >
-                      Borrow
+                      {loadingStates[`${market.symbol}-borrow`] ? <LoadingSpinner /> : 'Borrow'}
                     </button>
 
                     <input
+                      className="action-input"
                       type="number"
-                      placeholder="Repay Amount"
+                      step="0.01"
+                      min="0"
+                      placeholder={`Repay ${market.symbol}`}
+                      value={amounts[`${market.symbol}-repay`] || ''}
                       onChange={(e) => setAmounts({
                         ...amounts,
                         [`${market.symbol}-repay`]: e.target.value
                       })}
                     />
                     <button
-                      className="btn-repay"
+                      className="action-btn btn-repay"
                       onClick={() => handleAction('repay', market.symbol)}
+                      disabled={loadingStates[`${market.symbol}-repay`]}
                     >
-                      Repay
+                      {loadingStates[`${market.symbol}-repay`] ? <LoadingSpinner /> : 'Repay'}
                     </button>
                   </div>
                 </div>
@@ -155,6 +260,59 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
           ))}
         </tbody>
       </table>
+
+      {/* Market Summary */}
+      <div style={{
+        marginTop: 'var(--space-xl)',
+        padding: 'var(--space-lg)',
+        background: 'var(--background-light)',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border-light)'
+      }}>
+        <h3 style={{
+          fontSize: '18px',
+          fontWeight: '700',
+          color: 'var(--text-primary)',
+          marginBottom: 'var(--space-md)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-sm)'
+        }}>
+          <span>💡</span>
+          Market Insights
+        </h3>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: 'var(--space-md)',
+          fontSize: '14px'
+        }}>
+          <div>
+            <strong style={{ color: 'var(--text-primary)' }}>Best Supply Rate:</strong>{' '}
+            <span style={{ color: 'var(--success-green)' }}>
+              {marketData.USDC ? `${formatRate(Math.max(
+                parseFloat(marketData.USDC?.supplyRate || 0),
+                parseFloat(marketData.DAI?.supplyRate || 0),
+                parseFloat(marketData.WETH?.supplyRate || 0)
+              ))}%` : 'Loading...'}
+            </span>
+          </div>
+          <div>
+            <strong style={{ color: 'var(--text-primary)' }}>Total Available:</strong>{' '}
+            <span style={{ color: 'var(--paypal-blue)' }}>
+              {marketData.USDC ? `$${formatLiquidity(
+                (parseFloat(marketData.USDC?.availableLiquidity || 0) +
+                 parseFloat(marketData.DAI?.availableLiquidity || 0) +
+                 parseFloat(marketData.WETH?.availableLiquidity || 0) * 2000).toFixed(0)
+              )}` : 'Loading...'}
+            </span>
+          </div>
+          <div>
+            <strong style={{ color: 'var(--text-primary)' }}>Protocol Status:</strong>{' '}
+            <span style={{ color: 'var(--success-green)' }}>🟢 Operational</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
