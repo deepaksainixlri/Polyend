@@ -63,49 +63,69 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances }) {
               
               <td>
                 <div className="action-group">
-                  <input 
-                    type="number" 
-                    placeholder="Amount"
-                    onChange={(e) => setAmounts({
-                      ...amounts,
-                      [`${market.symbol}-supply`]: e.target.value
-                    })}
-                  />
-                  <button 
-                    className="btn-supply"
-                    onClick={() => handleAction('supply', market.symbol)}
-                  >
-                    Supply
-                  </button>
-                  
-                  <button 
-                    className="btn-withdraw"
-                    onClick={() => handleAction('withdraw', market.symbol)}
-                  >
-                    Withdraw
-                  </button>
-                  
-                  <input 
-                    type="number" 
-                    placeholder="Amount"
-                    onChange={(e) => setAmounts({
-                      ...amounts,
-                      [`${market.symbol}-borrow`]: e.target.value
-                    })}
-                  />
-                  <button 
-                    className="btn-borrow"
-                    onClick={() => handleAction('borrow', market.symbol)}
-                  >
-                    Borrow
-                  </button>
-                  
-                  <button 
-                    className="btn-repay"
-                    onClick={() => handleAction('repay', market.symbol)}
-                  >
-                    Repay
-                  </button>
+                  <div className="supply-withdraw-group">
+                    <input
+                      type="number"
+                      placeholder="Supply Amount"
+                      onChange={(e) => setAmounts({
+                        ...amounts,
+                        [`${market.symbol}-supply`]: e.target.value
+                      })}
+                    />
+                    <button
+                      className="btn-supply"
+                      onClick={() => handleAction('supply', market.symbol)}
+                    >
+                      Supply
+                    </button>
+
+                    <input
+                      type="number"
+                      placeholder="Withdraw Amount"
+                      onChange={(e) => setAmounts({
+                        ...amounts,
+                        [`${market.symbol}-withdraw`]: e.target.value
+                      })}
+                    />
+                    <button
+                      className="btn-withdraw"
+                      onClick={() => handleAction('withdraw', market.symbol)}
+                    >
+                      Withdraw
+                    </button>
+                  </div>
+
+                  <div className="borrow-repay-group">
+                    <input
+                      type="number"
+                      placeholder="Borrow Amount"
+                      onChange={(e) => setAmounts({
+                        ...amounts,
+                        [`${market.symbol}-borrow`]: e.target.value
+                      })}
+                    />
+                    <button
+                      className="btn-borrow"
+                      onClick={() => handleAction('borrow', market.symbol)}
+                    >
+                      Borrow
+                    </button>
+
+                    <input
+                      type="number"
+                      placeholder="Repay Amount"
+                      onChange={(e) => setAmounts({
+                        ...amounts,
+                        [`${market.symbol}-repay`]: e.target.value
+                      })}
+                    />
+                    <button
+                      className="btn-repay"
+                      onClick={() => handleAction('repay', market.symbol)}
+                    >
+                      Repay
+                    </button>
+                  </div>
                 </div>
               </td>
             </tr>

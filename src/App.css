@@ -154,8 +154,16 @@ body {
 
 .action-group {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.supply-withdraw-group,
+.borrow-repay-group {
+  display: flex;
+  gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .action-group input {
