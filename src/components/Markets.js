@@ -172,6 +172,8 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
                   {/* Supply/Withdraw Row */}
                   <div className="action-row">
                     <input
+                      id={`supply-${market.symbol.toLowerCase()}`}
+                      name={`supply-${market.symbol.toLowerCase()}`}
                       className="action-input"
                       type="number"
                       step="0.01"
@@ -182,16 +184,21 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
                         ...amounts,
                         [`${market.symbol}-supply`]: e.target.value
                       })}
+                      aria-label={`Supply ${market.symbol} amount`}
                     />
                     <button
                       className="action-btn btn-supply"
                       onClick={() => handleAction('supply', market.symbol)}
                       disabled={loadingStates[`${market.symbol}-supply`]}
+                      aria-label={`Supply ${market.symbol} to earn interest`}
+                      type="button"
                     >
                       {loadingStates[`${market.symbol}-supply`] ? <LoadingSpinner /> : 'Supply'}
                     </button>
 
                     <input
+                      id={`withdraw-${market.symbol.toLowerCase()}`}
+                      name={`withdraw-${market.symbol.toLowerCase()}`}
                       className="action-input"
                       type="number"
                       step="0.01"
@@ -202,11 +209,14 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
                         ...amounts,
                         [`${market.symbol}-withdraw`]: e.target.value
                       })}
+                      aria-label={`Withdraw ${market.symbol} amount`}
                     />
                     <button
                       className="action-btn btn-withdraw"
                       onClick={() => handleAction('withdraw', market.symbol)}
                       disabled={loadingStates[`${market.symbol}-withdraw`]}
+                      aria-label={`Withdraw ${market.symbol} from your supply`}
+                      type="button"
                     >
                       {loadingStates[`${market.symbol}-withdraw`] ? <LoadingSpinner /> : 'Withdraw'}
                     </button>
@@ -215,6 +225,8 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
                   {/* Borrow/Repay Row */}
                   <div className="action-row">
                     <input
+                      id={`borrow-${market.symbol.toLowerCase()}`}
+                      name={`borrow-${market.symbol.toLowerCase()}`}
                       className="action-input"
                       type="number"
                       step="0.01"
@@ -225,16 +237,21 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
                         ...amounts,
                         [`${market.symbol}-borrow`]: e.target.value
                       })}
+                      aria-label={`Borrow ${market.symbol} amount`}
                     />
                     <button
                       className="action-btn btn-borrow"
                       onClick={() => handleAction('borrow', market.symbol)}
                       disabled={loadingStates[`${market.symbol}-borrow`]}
+                      aria-label={`Borrow ${market.symbol} against your collateral`}
+                      type="button"
                     >
                       {loadingStates[`${market.symbol}-borrow`] ? <LoadingSpinner /> : 'Borrow'}
                     </button>
 
                     <input
+                      id={`repay-${market.symbol.toLowerCase()}`}
+                      name={`repay-${market.symbol.toLowerCase()}`}
                       className="action-input"
                       type="number"
                       step="0.01"
@@ -245,11 +262,14 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData
                         ...amounts,
                         [`${market.symbol}-repay`]: e.target.value
                       })}
+                      aria-label={`Repay ${market.symbol} amount`}
                     />
                     <button
                       className="action-btn btn-repay"
                       onClick={() => handleAction('repay', market.symbol)}
                       disabled={loadingStates[`${market.symbol}-repay`]}
+                      aria-label={`Repay ${market.symbol} loan`}
+                      type="button"
                     >
                       {loadingStates[`${market.symbol}-repay`] ? <LoadingSpinner /> : 'Repay'}
                     </button>

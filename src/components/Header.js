@@ -47,6 +47,8 @@ function Header({ account, connectWallet, healthFactor }) {
         <button
           className="connect-btn"
           onClick={connectWallet}
+          type="button"
+          aria-label={account ? "Connected wallet address" : "Connect MetaMask wallet"}
         >
           {account ? (
             <>

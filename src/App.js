@@ -298,7 +298,13 @@ function App() {
         <div className="connect-prompt">
           <h2>Welcome to PolyLend</h2>
           <p>Connect your wallet to get started</p>
-          <button onClick={connectWallet}>Connect Wallet</button>
+          <button
+            onClick={connectWallet}
+            type="button"
+            aria-label="Connect MetaMask wallet to access PolyLend"
+          >
+            Connect Wallet
+          </button>
         </div>
       )}
     </div>
