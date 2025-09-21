@@ -1,0 +1,259 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.App {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+.header {
+  background: white;
+  border-radius: 20px;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.logo h1 {
+  font-size: 28px;
+  color: #333;
+}
+
+.logo span {
+  color: #666;
+  font-size: 14px;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.health-factor {
+  background: #f0f0f0;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.health-factor .safe {
+  color: #22c55e;
+}
+
+.health-factor .danger {
+  color: #ef4444;
+}
+
+.connect-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.connect-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Dashboard */
+.dashboard {
+  margin-bottom: 30px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.stat-card h3 {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Markets */
+.markets {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.markets h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.markets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markets-table th {
+  text-align: left;
+  padding: 15px;
+  background: #f8f9fa;
+  color: #666;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.markets-table td {
+  padding: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.asset-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-info .symbol {
+  font-weight: 600;
+  color: #333;
+}
+
+.asset-info .name {
+  font-size: 12px;
+  color: #999;
+}
+
+.action-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.action-group input {
+  width: 100px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.action-group button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-supply {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-withdraw {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-borrow {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-repay {
+  background: #8b5cf6;
+  color: white;
+}
+
+.action-group button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Connect Prompt */
+.connect-prompt {
+  background: white;
+  border-radius: 20px;
+  padding: 60px;
+  text-align: center;
+  margin-top: 100px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+.connect-prompt h2 {
+  font-size: 36px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.connect-prompt p {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 18px;
+}
+
+.connect-prompt button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.connect-prompt button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .markets-table {
+    font-size: 14px;
+  }
+  
+  .action-group {
+    flex-direction: column;
+  }
+}
