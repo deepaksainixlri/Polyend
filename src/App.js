@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,7 +11,6 @@ import { CONTRACTS, POLYLEND_ABI, TOKEN_ABI } from './contracts/config';
 
 function App() {
   const [account, setAccount] = useState('');
-  const [provider, setProvider] = useState(null);
   const [contracts, setContracts] = useState({});
   const [balances, setBalances] = useState({});
   const [healthFactor, setHealthFactor] = useState('0');
@@ -53,7 +52,6 @@ function App() {
         );
         
         setAccount(accounts[0]);
-        setProvider(provider);
         setContracts({ polyLend, usdc, dai, weth });
         
         toast.success('Wallet connected!');
