@@ -14,6 +14,7 @@ function App() {
   const [contracts, setContracts] = useState({});
   const [balances, setBalances] = useState({});
   const [healthFactor, setHealthFactor] = useState('0');
+  const [marketData, setMarketData] = useState({});
 
   // Connect wallet
   const connectWallet = async () => {
@@ -56,8 +57,9 @@ function App() {
         
         toast.success('Wallet connected!');
         
-        // Load user data
+        // Load user data and market data
         await loadUserData(accounts[0], polyLend);
+        await loadMarketData(polyLend);
       } else {
         toast.error('Please install MetaMask!');
       }
@@ -103,6 +105,30 @@ function App() {
     }
   };
 
+  // Load market data
+  const loadMarketData = async (polyLend) => {
+    try {
+      const assets = ['USDC', 'DAI', 'WETH'];
+      const marketInfo = {};
+
+      for (const asset of assets) {
+        const data = await polyLend.getMarketData(CONTRACTS[asset]);
+        // getMarketData returns: totalSupply, totalBorrow, supplyRate, borrowRate, availableLiquidity
+        marketInfo[asset] = {
+          totalSupply: ethers.utils.formatUnits(data[0], 18),
+          totalBorrow: ethers.utils.formatUnits(data[1], 18),
+          supplyRate: ethers.utils.formatUnits(data[2], 18),
+          borrowRate: ethers.utils.formatUnits(data[3], 18),
+          availableLiquidity: ethers.utils.formatUnits(data[4], 18)
+        };
+      }
+
+      setMarketData(marketInfo);
+    } catch (error) {
+      console.error('Error loading market data:', error);
+    }
+  };
+
   // Supply function
   const handleSupply = async (asset, amount) => {
     try {
@@ -125,6 +151,7 @@ function App() {
       
       // Reload data
       await loadUserData(account, contracts.polyLend);
+      await loadMarketData(contracts.polyLend);
     } catch (error) {
       console.error(error);
       toast.error('Supply failed: ' + error.message);
@@ -134,21 +161,42 @@ function App() {
   // Borrow function
   const handleBorrow = async (asset, amount) => {
     try {
+      const amountFloat = parseFloat(amount);
+
+      // Check available liquidity
+      if (marketData[asset] && marketData[asset].availableLiquidity) {
+        const availableLiquidity = parseFloat(marketData[asset].availableLiquidity);
+
+        if (amountFloat > availableLiquidity) {
+          toast.error(`Insufficient liquidity. Available: ${availableLiquidity.toFixed(4)} ${asset}`);
+          return;
+        }
+      }
+
       const amountWei = ethers.utils.parseUnits(amount, 18);
-      
+
       const borrowTx = await contracts.polyLend.borrow(
-        CONTRACTS[asset], 
+        CONTRACTS[asset],
         amountWei
       );
       await borrowTx.wait();
-      
+
       toast.success(`Successfully borrowed ${amount} ${asset}!`);
-      
+
       // Reload data
       await loadUserData(account, contracts.polyLend);
+      await loadMarketData(contracts.polyLend);
+      await loadMarketData(contracts.polyLend);
     } catch (error) {
       console.error(error);
-      toast.error('Borrow failed: ' + error.message);
+      // Better error handling for common issues
+      if (error.message.includes('Insufficient liquidity')) {
+        toast.error('Insufficient liquidity in the pool for this amount');
+      } else if (error.message.includes('execution reverted')) {
+        toast.error('Transaction failed: Check your collateral and borrowing capacity');
+      } else {
+        toast.error('Borrow failed: ' + error.message);
+      }
     }
   };
 
@@ -173,6 +221,7 @@ function App() {
       
       // Reload data
       await loadUserData(account, contracts.polyLend);
+      await loadMarketData(contracts.polyLend);
     } catch (error) {
       console.error(error);
       toast.error('Repay failed: ' + error.message);
@@ -194,6 +243,7 @@ function App() {
       
       // Reload data
       await loadUserData(account, contracts.polyLend);
+      await loadMarketData(contracts.polyLend);
     } catch (error) {
       console.error(error);
       toast.error('Withdraw failed: ' + error.message);
@@ -214,12 +264,13 @@ function App() {
         <>
           <Dashboard balances={balances} />
           
-          <Markets 
+          <Markets
             onSupply={handleSupply}
             onBorrow={handleBorrow}
             onRepay={handleRepay}
             onWithdraw={handleWithdraw}
             balances={balances}
+            marketData={marketData}
           />
         </>
       ) : (

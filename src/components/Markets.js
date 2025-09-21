@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances }) {
+function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances, marketData }) {
   const [amounts, setAmounts] = useState({});
   
   const markets = [
-    { symbol: 'USDC', name: 'USD Coin', apy: '3.5%' },
-    { symbol: 'DAI', name: 'Dai Stablecoin', apy: '4.2%' },
-    { symbol: 'WETH', name: 'Wrapped Ether', apy: '2.8%' }
+    { symbol: 'USDC', name: 'USD Coin' },
+    { symbol: 'DAI', name: 'Dai Stablecoin' },
+    { symbol: 'WETH', name: 'Wrapped Ether' }
   ];
 
   const handleAction = (action, asset) => {
@@ -38,7 +38,9 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances }) {
         <thead>
           <tr>
             <th>Asset</th>
-            <th>APY</th>
+            <th>Supply APY</th>
+            <th>Borrow APY</th>
+            <th>Available Liquidity</th>
             <th>Your Supply</th>
             <th>Your Borrow</th>
             <th>Actions</th>
@@ -55,10 +57,31 @@ function Markets({ onSupply, onBorrow, onRepay, onWithdraw, balances }) {
                 </div>
               </td>
               
-              <td>{market.apy}</td>
-              
+              <td>
+                {marketData[market.symbol]
+                  ? `${(parseFloat(marketData[market.symbol].supplyRate) * 100).toFixed(2)}%`
+                  : 'Loading...'
+                }
+              </td>
+
+              <td>
+                {marketData[market.symbol]
+                  ? `${(parseFloat(marketData[market.symbol].borrowRate) * 100).toFixed(2)}%`
+                  : 'Loading...'
+                }
+              </td>
+
+              <td>
+                <span className={parseFloat(marketData[market.symbol]?.availableLiquidity || '0') < 0.01 ? 'low-liquidity' : ''}>
+                  {marketData[market.symbol]
+                    ? `${parseFloat(marketData[market.symbol].availableLiquidity).toFixed(4)} ${market.symbol}`
+                    : 'Loading...'
+                  }
+                </span>
+              </td>
+
               <td>{balances[market.symbol]?.supply || '0.00'}</td>
-              
+
               <td>{balances[market.symbol]?.borrow || '0.00'}</td>
               
               <td>
