@@ -320,6 +320,31 @@ body {
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-light);
   animation: slideInUp 0.8s ease-out 0.4s both;
+  overflow-x: auto;
+  min-width: 0;
+  position: relative;
+}
+
+.markets::after {
+  content: '← Scroll to see all actions →';
+  position: absolute;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  background: var(--paypal-blue);
+  color: var(--white);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .markets::after {
+    opacity: 1;
+  }
 }
 
 .markets h2 {
@@ -339,6 +364,7 @@ body {
 
 .markets-table {
   width: 100%;
+  min-width: 1200px;
   border-collapse: separate;
   border-spacing: 0;
   border-radius: var(--radius-lg);
@@ -454,8 +480,9 @@ body {
 .action-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  min-width: 320px;
+  gap: var(--space-sm);
+  min-width: 360px;
+  max-width: 400px;
 }
 
 .action-row {
@@ -466,13 +493,15 @@ body {
 
 .action-input {
   flex: 1;
+  min-width: 0;
   padding: var(--space-sm) var(--space-md);
   border: 2px solid var(--border-light);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   transition: all 0.3s ease;
   background: var(--white);
+  width: 120px;
 }
 
 .action-input:focus {
@@ -486,12 +515,14 @@ body {
   border: none;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 80px;
+  min-width: 75px;
+  width: 85px;
   position: relative;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .action-btn::before {
@@ -702,16 +733,24 @@ body {
   }
 
   .markets-table {
-    min-width: 800px;
+    min-width: 1000px;
   }
 
   .action-group {
-    min-width: 280px;
+    min-width: 320px;
+    max-width: 340px;
   }
 
-  .action-row {
-    flex-direction: column;
-    align-items: stretch;
+  .action-input {
+    width: 110px;
+    font-size: 12px;
+  }
+
+  .action-btn {
+    width: 75px;
+    min-width: 70px;
+    font-size: 12px;
+    padding: var(--space-xs) var(--space-sm);
   }
 
   .connect-prompt {

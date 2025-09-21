@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,6 +15,27 @@ function App() {
   const [balances, setBalances] = useState({});
   const [healthFactor, setHealthFactor] = useState('0');
   const [marketData, setMarketData] = useState({});
+
+  // Load market data on component mount
+  useEffect(() => {
+    const loadInitialMarketData = async () => {
+      try {
+        if (window.ethereum) {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const polyLend = new ethers.Contract(
+            CONTRACTS.PolyLend,
+            POLYLEND_ABI,
+            provider
+          );
+          await loadMarketData(polyLend);
+        }
+      } catch (error) {
+        console.error('Error loading initial market data:', error);
+      }
+    };
+
+    loadInitialMarketData();
+  }, []);
 
   // Connect wallet
   const connectWallet = async () => {
